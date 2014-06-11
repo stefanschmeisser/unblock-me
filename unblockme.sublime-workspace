@@ -1,0 +1,1143 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/xampp/apache/logs/error.log",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "body{\n	width: 100%;\n	height: 100%;\n	margin: 0px;\n	padding: 0px;\n}\n\n#cont{\n	width: 1000px;\n}\n\n#wrapper{\n	float: left;\n	width: 640px;\n	height: 640px;\n	margin: 20px;\n	padding: 20px;\n	background-color: #e6e6e6;\n}\n\n#canvas{\n	width: 600px;\n	height: 600px;\n	background-color: #fff;\n}\n\n#imageContainer{\n	float: right;\n	padding-top: 20px;\n	height: 700px;\n}\n\n#goal{\n	position: relative;\n	width: 20px;\n	height: 100px;\n	margin-left: 600px;\n	margin-top: -404px;\n	background-color: #fff;\n	z-index: 2;\n}\n\n#buttonContainer{\n	padding-top: 20px;\n	padding-left: 40px;\n}\n\n#message{\n	display: none;\n}\n\n#v3{\n	width: 100px;\n	height: 300px;\n}",
+			"file": "levelCreatorStyle.css",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 618,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/Stefan/Downloads/unblockme_28-03-2014/unblockme/loadXMLFile.js",
+			"settings":
+			{
+				"buffer_size": 572,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "levelCreator.html",
+			"settings":
+			{
+				"buffer_size": 6068,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "<?php    \n\n	$data = file_get_contents('php://input');\n	if($data != null){\n		$dataJSON = json_decode($data);\n		for($i=0; $i < count($dataJSON); $i++){\n			if($dataJSON[$i]->{'target'} == true){\n				$targetID = $i;\n			}\n		}\n		$xml = simplexml_load_file(\"game.xml\");\n		$levels = $xml->levels;\n		$level = $levels->addChild('level');\n		$level->addChild('id', (count($levels->children())));\n		$blocks = $level->addChild('blocks');\n		$target = $blocks->addChild('target');\n		$targetOrigin = $target->addChild('origin');\n		$targetOrigin->addChild('x', (($dataJSON[$targetID]->{'origin'}->{'x'} / 100)));\n		$targetOrigin->addChild('y', (($dataJSON[$targetID]->{'origin'}->{'y'} / 100)));\n		$targetSize = $target->addChild('size');\n		$targetSize->addChild('x', 2);\n		$targetSize->addChild('y', 1);\n    $level->addChild('valid_for_divisions', '6');\n    $level->addChild('level_of_difficulty', '1');\n		for($i=0; $i < count($dataJSON); $i++){\n			if($dataJSON[$i]->{'target'} == false){\n				$block = $blocks->addChild('block');\n				$blockOrigin = $block->addChild('origin');\n				$blockOrigin->addChild('x', ($dataJSON[$i]->{'origin'}->{'x'} / 100));\n				$blockOrigin->addChild('y', ($dataJSON[$i]->{'origin'}->{'y'} / 100));\n				$blockSize = $block->addChild('size');\n				$blockSize->addChild('x', $dataJSON[$i]->{'x'});\n				$blockSize->addChild('y', $dataJSON[$i]->{'y'});\n			}\n		}\n		$xml->asXML(\"game.xml\");\n	}\n\n?>\n",
+			"file": "savexml.php",
+			"file_size": 1403,
+			"file_write_time": 130406970944424630,
+			"settings":
+			{
+				"buffer_size": 1402,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "unblockme.html",
+			"settings":
+			{
+				"buffer_size": 15520,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "game.xml",
+			"settings":
+			{
+				"buffer_size": 729001,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/Stefan/Downloads/umbau.html",
+			"settings":
+			{
+				"buffer_size": 14034,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "game.dtd",
+			"settings":
+			{
+				"buffer_size": 1469,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "function xml2json(xml, tab) {\n   var X = {\n      toObj: function(xml) {\n         var o = {};\n         if (xml.nodeType==1) {   \n            if (xml.attributes.length)   \n               for (var i=0; i<xml.attributes.length; i++)\n                  o[\"@\"+xml.attributes[i].nodeName] = (xml.attributes[i].nodeValue||\"\").toString();\n            if (xml.firstChild) { \n               var textChild=0, cdataChild=0, hasElementChild=false;\n               for (var n=xml.firstChild; n; n=n.nextSibling) {\n                  if (n.nodeType==1) hasElementChild = true;\n                  else if (n.nodeType==3 && n.nodeValue.match(/[^ \\f\\n\\r\\t\\v]/)) textChild++; \n                  else if (n.nodeType==4) cdataChild++; \n               }\n               if (hasElementChild) {\n                  if (textChild < 2 && cdataChild < 2) {\n                     X.removeWhite(xml);\n                     for (var n=xml.firstChild; n; n=n.nextSibling) {\n                        if (n.nodeType == 3) \n                           o[\"#text\"] = X.escape(n.nodeValue);\n                        else if (n.nodeType == 4) \n                           o[\"#cdata\"] = X.escape(n.nodeValue);\n                        else if (o[n.nodeName]) { \n                           if (o[n.nodeName] instanceof Array)\n                              o[n.nodeName][o[n.nodeName].length] = X.toObj(n);\n                           else\n                              o[n.nodeName] = [o[n.nodeName], X.toObj(n)];\n                        }\n                        else \n                           o[n.nodeName] = X.toObj(n);\n                     }\n                  }\n                  else {\n                     if (!xml.attributes.length)\n                        o = X.escape(X.innerXml(xml));\n                     else\n                        o[\"#text\"] = X.escape(X.innerXml(xml));\n                  }\n               }\n               else if (textChild) {\n                  if (!xml.attributes.length)\n                     o = X.escape(X.innerXml(xml));\n                  else\n                     o[\"#text\"] = X.escape(X.innerXml(xml));\n               }\n               else if (cdataChild) {\n                  if (cdataChild > 1)\n                     o = X.escape(X.innerXml(xml));\n                  else\n                     for (var n=xml.firstChild; n; n=n.nextSibling)\n                        o[\"#cdata\"] = X.escape(n.nodeValue);\n               }\n            }\n            if (!xml.attributes.length && !xml.firstChild) o = null;\n         }\n         else if (xml.nodeType==9) { \n            o = X.toObj(xml.documentElement);\n         }\n         else\n            alert(\"unhandled node type: \" + xml.nodeType);\n         return o;\n      },\n      toJson: function(o, name, ind) {\n         var json = name ? (\"\\\"\"+name+\"\\\"\") : \"\";\n         if (o instanceof Array) {\n            for (var i=0,n=o.length; i<n; i++)\n               o[i] = X.toJson(o[i], \"\", ind+\"\\t\");\n            json += (name?\":[\":\"[\") + (o.length > 1 ? (\"\\n\"+ind+\"\\t\"+o.join(\",\\n\"+ind+\"\\t\")+\"\\n\"+ind) : o.join(\"\")) + \"]\";\n         }\n         else if (o == null)\n            json += (name&&\":\") + \"null\";\n         else if (typeof(o) == \"object\") {\n            var arr = [];\n            for (var m in o)\n               arr[arr.length] = X.toJson(o[m], m, ind+\"\\t\");\n            json += (name?\":{\":\"{\") + (arr.length > 1 ? (\"\\n\"+ind+\"\\t\"+arr.join(\",\\n\"+ind+\"\\t\")+\"\\n\"+ind) : arr.join(\"\")) + \"}\";\n         }\n         else if (typeof(o) == \"string\")\n            json += (name&&\":\") + \"\\\"\" + o.toString() + \"\\\"\";\n         else\n            json += (name&&\":\") + o.toString();\n         return json;\n      },\n      innerXml: function(node) {\n         var s = \"\"\n         if (\"innerHTML\" in node)\n            s = node.innerHTML;\n         else {\n            var asXml = function(n) {\n               var s = \"\";\n               if (n.nodeType == 1) {\n                  s += \"<\" + n.nodeName;\n                  for (var i=0; i<n.attributes.length;i++)\n                     s += \" \" + n.attributes[i].nodeName + \"=\\\"\" + (n.attributes[i].nodeValue||\"\").toString() + \"\\\"\";\n                  if (n.firstChild) {\n                     s += \">\";\n                     for (var c=n.firstChild; c; c=c.nextSibling)\n                        s += asXml(c);\n                     s += \"</\"+n.nodeName+\">\";\n                  }\n                  else\n                     s += \"/>\";\n               }\n               else if (n.nodeType == 3)\n                  s += n.nodeValue;\n               else if (n.nodeType == 4)\n                  s += \"<![CDATA[\" + n.nodeValue + \"]]>\";\n               return s;\n            };\n            for (var c=node.firstChild; c; c=c.nextSibling)\n               s += asXml(c);\n         }\n         return s;\n      },\n      escape: function(txt) {\n         return txt.replace(/[\\\\]/g, \"\\\\\\\\\")\n                   .replace(/[\\\"]/g, '\\\\\"')\n                   .replace(/[\\n]/g, '\\\\n')\n                   .replace(/[\\r]/g, '\\\\r');\n      },\n      removeWhite: function(e) {\n         e.normalize();\n         for (var n = e.firstChild; n; ) {\n            if (n.nodeType == 3) {  \n               if (!n.nodeValue.match(/[^ \\f\\n\\r\\t\\v]/)) { \n                  var nxt = n.nextSibling;\n                  e.removeChild(n);\n                  n = nxt;\n               }\n               else\n                  n = n.nextSibling;\n            }\n            else if (n.nodeType == 1) {  \n               X.removeWhite(n);\n               n = n.nextSibling;\n            }\n            else                      \n               n = n.nextSibling;\n         }\n         return e;\n      }\n   };\n   if (xml.nodeType == 9) // document node\n      xml = xml.documentElement;\n   var json = X.toJson(X.toObj(X.removeWhite(xml)), xml.nodeName, \"\\t\");\n   return \"{\\n\" + tab + (tab ? json.replace(/\\t/g, tab) : json.replace(/\\t|\\n/g, \"\")) + \"\\n}\";\n}\n",
+			"file": "xml2json.js",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 5823,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "body{\n	width: 100%;\n	height: 100%;\n	margin: 0px;\n	padding: 0px;\n}\n\n#wrapper{\n	width: 640px;\n	height: 640px;\n	background-color: #e6e6e6;\n	margin: 20px auto;\n	padding: 20px;\n}\n\n#canvas{\n	position: absolute;\n	width: 600px;\n	height: 600px;\n	background-color: #fff;\n}\n\n#goal{\n	position: absolute;\n	width: 20px;\n	height: 100px;\n	margin-left: 600px;\n	margin-top: 200px;\n	background-color: #fff;\n	z-index: 2;\n}\n",
+			"file": "style.css",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 403,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 90.0,
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"diso",
+				"Package Control: Discover Packages"
+			],
+			[
+				"packag",
+				"Package Control: Discover Packages"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"package ins",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"package",
+				"Package Control: Discover Packages"
+			],
+			[
+				"brows",
+				"Preferences: Browse Packages"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 528.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/xampp/htdocs/dokumentenstrukturen/unblockme/unblockme2.html",
+		"/C/Users/Stefan/Downloads/unblockme_28-03-2014/unblockme/game.xml",
+		"/C/xampp/htdocs/dokumentenstrukturen/savexml.php",
+		"/C/xampp/htdocs/dokumentenstrukturen/simple.xml",
+		"/C/xampp/htdocs/dokumentenstrukturen/game.xml",
+		"/C/xampp/htdocs/dokumentenstrukturen/unblockme/game.xml",
+		"/C/xampp/htdocs/test/jspdf/examples/basic.htm",
+		"/C/xampp/htdocs/test/jspdf/examples/test.html",
+		"/C/xampp/htdocs/test/js_pdf/index.html",
+		"/C/Users/Stefan/Documents/GitHub/protima/src/FrontController.java",
+		"/C/Users/Stefan/Documents/GitHub/protima/.gitignore",
+		"/C/xampp/htdocs/unblockme/unblockme.html",
+		"/C/xampp/htdocs/js_unblockme/source.html",
+		"/C/xampp/htdocs/js_unblockme/test.html",
+		"/C/Users/Stefan/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/xampp/htdocs/js_unblockme/index.html",
+		"/C/xampp/htdocs/www_de_d-parts_update/control/system/modules/products/productsController.php",
+		"/C/xampp/htdocs/www_de_d-parts_update/index.php",
+		"/C/xampp/htdocs/www_de_d-parts_update/control/system/modules/products/models/productsModel.php",
+		"/C/xampp/htdocs/www_de_d-parts_update/control/system/models/DatabaseConnection.php",
+		"/C/Users/Stefan/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/Stefan/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/Stefan/AppData/Roaming/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/C/Users/Stefan/AppData/Roaming/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"currentLevel",
+			"currentLevel.target.",
+			"valid_for_devisions",
+			"//",
+			"side"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/xampp/apache/logs/error.log",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "levelCreatorStyle.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 618,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								615,
+								615
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 323.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/Stefan/Downloads/unblockme_28-03-2014/unblockme/loadXMLFile.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 572,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								466,
+								466
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "levelCreator.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6068,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								952,
+								952
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "savexml.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1402,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								251,
+								255
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "unblockme.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15520,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								517,
+								517
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 340.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "game.xml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 729001,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9228,
+								9228
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7245.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/C/Users/Stefan/Downloads/umbau.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14034,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5553,
+								5553
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4269.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "game.dtd",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1469,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								1469
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "xml2json.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5823,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2532,
+								2532
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "style.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 403,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								146,
+								146
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close"
+							],
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "unblockme.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 274.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

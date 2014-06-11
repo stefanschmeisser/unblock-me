@@ -1,0 +1,55 @@
+body{
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+#cont{
+	width: 1000px;
+}
+
+#wrapper{
+	float: left;
+	width: 640px;
+	height: 640px;
+	margin: 20px;
+	padding: 20px;
+	background-color: #e6e6e6;
+}
+
+#canvas{
+	width: 600px;
+	height: 600px;
+	background-color: #fff;
+}
+
+#imageContainer{
+	float: right;
+	padding-top: 20px;
+	height: 700px;
+}
+
+#goal{
+	position: relative;
+	width: 20px;
+	height: 100px;
+	margin-left: 600px;
+	margin-top: -404px;
+	background-color: #fff;
+	z-index: 2;
+}
+
+#buttonContainer{
+	padding-top: 20px;
+	padding-left: 40px;
+}
+
+#message{
+	display: none;
+}
+
+#v3{
+	width: 100px;
+	height: 300px;
+}

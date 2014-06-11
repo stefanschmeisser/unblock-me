@@ -1,0 +1,44 @@
+<!DOCTYPE game
+[
+<!ELEMENT game(settings, levels, themes)>
+  <!ELEMENT settings(gamefield, tile, goal)>
+  	<!ELEMENT gamefield(measurements, divisions)>
+  		<!ELEMENT measurements (#PCDATA)>
+  		<!ELEMENT divisions (#PCDATA)>
+  	<!ELEMENT goal (x, y)>
+  		<!ELEMENT x (#PCDATA)>
+  		<!ELEMENT y (#PCDATA)>
+	<!ELEMENT levels (level+)>
+		<!ELEMENT level (id, valid_for_divisions, level_of_difficulty, blocks)>
+			<!ELEMENT id (#PCDATA)>
+			<!ELEMENT valid_for_divisions (#PCDATA)>
+      <!ELEMENT level_of_difficulty (#PCDATA)>
+			<!ELEMENT blocks (target, block+)>
+	      <!ELEMENT target (origin, size)>
+	      	<!ELEMENT origin (x, y)>
+		      	<!ELEMENT x (#PCDATA)>
+		      	<!ELEMENT y (#PCDATA)>
+	      	<!ELEMENT size (x, y)>
+	      		<!ELEMENT x (#PCDATA)>
+		      	<!ELEMENT y (#PCDATA)>
+				<!ELEMENT block (origin, size)>
+	      	<!ELEMENT origin (x, y)>
+	      		<!ELEMENT x (#PCDATA)>
+	      		<!ELEMENT y (#PCDATA)>
+	      	<!ELEMENT size (x, y)>
+	      		<!ELEMENT x (#PCDATA)>
+	      		<!ELEMENT y (#PCDATA)>
+	<!ELEMENT themes (theme+)>
+		<!ELEMENT theme (id, name, images+)>
+			<!ELEMENT id (#PCDATA)>
+			<!ELEMENT name (#PCDATA)>
+			<!ELEMENT images (target, image)>
+				<!ELEMENT target (#PCDATA)>
+				<!ELEMENT image (vertical, horizontal)>
+					<!ELEMENT vertical (two, three)>
+						<!ELEMENT two (#PCDATA)>
+						<!ELEMENT three (#PCDATA)>
+					<!ELEMENT horizontal (two, three)>
+						<!ELEMENT two (#PCDATA)>
+						<!ELEMENT three (#PCDATA)>
+]>

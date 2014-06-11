@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Unblockme</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="js/loadXMLFile.js"></script>
+    <script src="js/xml2json.js"></script>
+
+    <script>
+
+    function getGameData()
+    {
+        var gameXML = loadXMLFile("http://localhost/dokumentenstrukturen/unblockme/game.xml");
+        return JSON.parse(xml2json(gameXML, "  "));
+    }
+
+    </script>
+  </head>
+
+  <body>
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <p>
+    <div id="levelChooser" class="row">
+      <div class="col-md-offset-3 col-md-1">
+        <label for="auswahl">Level: </label>
+      </div>
+      <div class="col-md-4">
+        <select id="auswahl" name="auswahl" class="form-control" onChange="chooseLevelManually(this.options[this.selectedIndex].value)"></select>
+      </div>
+    </div>
+    <br />
+    <div id='themeChooser' class="row">
+      <div class="col-md-offset-3 col-md-1">
+        <label for="theme">Theme: </label>
+      </div>
+      <div class="col-md-4">
+        <select id="theme" name="theme" class="form-control" onChange="chooseTheme(this.options[this.selectedIndex].value)"></select>
+      </div>
+    </div>
+    </p>
+    <div id="xmlTarget"> </div>
+    <div id='wrapper'>
+      <canvas id="canvas">Your browser does not support canvas!</canvas>
+    <div id="goal"></div>
+    </div>
+  </body>
+    <script type='text/javascript'>
+      var gameData = getGameData();
+      var canvas_width = parseInt(gameData.game.settings.gamefield.measurements);
+      var canvas_height = parseInt(gameData.game.settings.gamefield.measurements);
+      var mesh_divisions_x = parseInt(gameData.game.settings.gamefield.divisions);
+      var mesh_divisions_y = parseInt(gameData.game.settings.gamefield.divisions);
+      var tile_width = (parseInt(gameData.game.settings.gamefield.measurements)/parseInt(gameData.game.settings.gamefield.divisions));
+      var tile_height = (parseInt(gameData.game.settings.gamefield.measurements)/parseInt(gameData.game.settings.gamefield.divisions));
+      var goal = [parseInt(gameData.game.settings.goal.x), parseInt(gameData.game.settings.goal.y)];
+      var field;
+      var block_id;
+      var blocks = [];
+      var gstd = false;
+      var currentLevel;
+      var lev = 1;
+      var themeID = 1;
+      var img_h_2, img_h_3, img_v_2, img_v_3, img_target;
+
+      document.getElementById("wrapper").style.width = canvas_width+4;
+
+      var canvas = document.getElementById("canvas");
+      canvas.addEventListener("mousedown", onMouseDepressed, false);
+      window.addEventListener("mouseup", onMouseReleased, false);
+      canvas.addEventListener("mousemove", onMouseMove, false);
+      canvas.width = canvas_width+9;
+      canvas.height = canvas_height+9;
+      var context = canvas.getContext("2d");
+
+      var activeBlock = [-1, '', [], [], [], [-1, -1, -1, -1]];
+
+
+      function draw(c1, c2, isgb, orientation, size)
+      {
+        context.fillStyle="#aaa";
+        context.fillRect(c1[0] * tile_width + 3, c1[1] * tile_height + 3, (c2[0] - c1[0]) * tile_width + 2, (c2[1] - c1[1]) * tile_height + 2); 
+        
+        if(isgb == true){
+          context.drawImage(img_target, c1[0] * tile_width + 5, c1[1] * tile_height + 5, (c2[0] - c1[0]) * tile_width - 2, (c2[1] - c1[1]) * tile_height - 2);
+        }else{
+          context.fillStyle = "#00f";
+
+          if(orientation == "h"){
+            if(size == 2){
+               context.drawImage(img_h_2, c1[0] * tile_width + 5, c1[1] * tile_height + 5, (c2[0] - c1[0]) * tile_width - 2, (c2[1] - c1[1]) * tile_height - 2);
+            }
+            if(size == 3){
+              context.drawImage(img_h_3, c1[0] * tile_width + 5, c1[1] * tile_height + 5, (c2[0] - c1[0]) * tile_width - 2, (c2[1] - c1[1]) * tile_height - 2);
+            }
+          }
+
+          if(orientation == "v"){
+            if(size == 2){
+              context.drawImage(img_v_2, c1[0] * tile_width + 5, c1[1] * tile_height + 5, (c2[0] - c1[0]) * tile_width - 2, (c2[1] - c1[1]) * tile_height - 2);
+            }
+            if(size == 3){
+              context.drawImage(img_v_3, c1[0] * tile_width + 5, c1[1] * tile_height + 5, (c2[0] - c1[0]) * tile_width - 2, (c2[1] - c1[1]) * tile_height - 2);
+            }
+          }
+        }
+      }
+
+      function drawGame()
+      {
+        context.clearRect(3, 3, canvas.width-7, canvas.height-7);
+        for (var i in blocks)
+        {
+          var b = blocks[i];
+          if (b[3] == activeBlock[0]){
+            draw(activeBlock[2], [activeBlock[2][0]+activeBlock[4][0],activeBlock[2][1]+activeBlock[4][1]], b[2], b[4], b[5]);
+          }
+          else{ 
+            draw(b[0], b[1], b[2], b[4], b[5]);
+          }
+        }
+      }
+
+      function chooseLevel(level)
+      {      
+        currentLevel = gameData.game.levels.level[level-1];
+        game("");
+      }
+
+      function chooseLevelManually(level){
+        lev = parseInt(level);
+        chooseLevel(lev);
+      }
+
+      function chooseTheme(themeID){
+        img_h_2 = new Image(); 
+        img_h_3 = new Image(); 
+        img_v_2 = new Image(); 
+        img_v_3 = new Image(); 
+        img_target = new Image();
+        img_h_2.src = gameData.game.themes.theme[themeID-1].images.horizontal.two;
+        img_h_3.src = gameData.game.themes.theme[themeID-1].images.horizontal.three;
+        img_v_2.src = gameData.game.themes.theme[themeID-1].images.vertical.two;
+        img_v_3.src = gameData.game.themes.theme[themeID-1].images.vertical.three;
+        img_target.src = gameData.game.themes.theme[themeID-1].images.target;
+        chooseLevel(lev);
+      }
+
+      function game(gamestr)
+      {
+        if(arguments.length == 0 || gamestr == null || gamestr.length == 0){
+
+          field = new Array(mesh_divisions_x);
+          for (var i = 0; i < mesh_divisions_x; i++)
+          {
+            field[i] = new Array(mesh_divisions_y);
+            for (var j = 0; j < mesh_divisions_y; j++){ 
+              field[i][j] = -1;
+            }
+          }
+
+          block_id = 0;
+          blocks = [];
+          
+          blocks.push([[parseInt(currentLevel.blocks.target.origin.x), parseInt(currentLevel.blocks.target.origin.y)],
+                       [(parseInt(currentLevel.blocks.target.origin.x)+parseInt(currentLevel.blocks.target.size.x)), (parseInt(currentLevel.blocks.target.origin.y)+parseInt(currentLevel.blocks.target.size.y))],
+                       true,
+                       block_id,
+                       "h",
+                       2 
+                      ]);
+          for (var j = parseInt(currentLevel.blocks.target.origin.x); j < (parseInt(currentLevel.blocks.target.origin.x)+parseInt(currentLevel.blocks.target.size.x)); j++){
+            for (var k = parseInt(currentLevel.blocks.target.origin.y); k < (parseInt(currentLevel.blocks.target.origin.y)+parseInt(currentLevel.blocks.target.size.y)); k++){
+              if(field[j][k] != -1){
+                for (var l = 0; l < mesh_divisions_x; l++){
+                  for (var m = 0; m < mesh_divisions_y; m++){ 
+                    if(field[l][m] == block_id){
+                      field[l][m] = -1;
+                    }
+                  }
+                }
+              }else{
+                field[j][k] = block_id;
+              }
+            }
+          }
+          block_id++;
+
+          for(var i=0; i<currentLevel.blocks.block.length; i++){
+            corner1 = [parseInt(currentLevel.blocks.block[i].origin.x), parseInt(currentLevel.blocks.block[i].origin.y)];
+            corner2 = [(parseInt(currentLevel.blocks.block[i].origin.x) + parseInt(currentLevel.blocks.block[i].size.x)), (parseInt(currentLevel.blocks.block[i].origin.y) + parseInt(currentLevel.blocks.block[i].size.y))];
+
+            if((parseInt(currentLevel.blocks.block[i].size.x) == 1 && ((parseInt(currentLevel.blocks.block[i].size.y) == 2) || (parseInt(currentLevel.blocks.block[i].size.y) == 3))) || (parseInt(currentLevel.blocks.block[i].size.y) == 1 && ((parseInt(currentLevel.blocks.block[i].size.x) == 2) || (parseInt(currentLevel.blocks.block[i].size.x) == 3)))){
+              if((parseInt(currentLevel.blocks.block[i].size.x) == 2) || (parseInt(currentLevel.blocks.block[i].size.x) == 3)){
+                blockOrientation = "h";
+                if(parseInt(currentLevel.blocks.block[i].size.x) == 2){
+                  blockSize = 2;
+                }
+                if(parseInt(currentLevel.blocks.block[i].size.x) == 3){
+                  blockSize = 3;
+                }
+              }
+
+              if(parseInt(currentLevel.blocks.block[i].size.y) == 2 || parseInt(currentLevel.blocks.block[i].size.y) == 3){
+                blockOrientation = "v";
+                if(parseInt(currentLevel.blocks.block[i].size.y) == 2){
+                  blockSize = 2;
+                }
+                if(parseInt(currentLevel.blocks.block[i].size.y) == 3){
+                  blockSize = 3;
+                }
+              }
+
+              blocks.push([corner1, corner2, false, block_id, blockOrientation, blockSize]);
+              for (var j = corner1[0]; j < corner2[0]; j++){
+                for (var k = corner1[1]; k < corner2[1]; k++){
+                  if(field[j][k] != -1){
+                    for (var l = 0; l < mesh_divisions_x; l++){
+                      for (var m = 0; m < mesh_divisions_y; m++){ 
+                        if(field[l][m] == block_id){
+                          field[l][m] = -1;
+                        }
+                      }
+                    }
+                  }else{
+                    field[j][k] = block_id;
+                  }
+                }
+              }
+              block_id++;
+            }
+          }
+
+          drawGame();
+          gstd = true;
+        }
+      }
+
+      function gwin()
+      {
+        alert("You win!");
+        if(lev < gameData.game.levels.level.length){
+          lev = lev+1;
+        }
+        document.getElementById("auswahl").value = lev;
+        chooseLevel(lev);
+        activeBlock = [-1, '', [], [], [], [-1, -1, -1, -1]];
+        drawGame();
+      }
+
+      function mouseposition(evt)
+      {
+        var rt = canvas.getBoundingClientRect();
+        return [(evt.clientX - rt.left)*(canvas.width/rt.width), (evt.clientY - rt.top)*(canvas.height/rt.height)];
+      }
+
+      function onMouseDepressed(e)
+      {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!gstd) return false;
+
+        var currentMousePosition = mouseposition(e);
+        activeBlock[0] = field[Math.floor(currentMousePosition[0]/tile_width)][Math.floor(currentMousePosition[1]/tile_height)];
+        if (activeBlock[0] == -1) return false;
+        activeBlock[4] = [blocks[activeBlock[0]][1][0] - blocks[activeBlock[0]][0][0], blocks[activeBlock[0]][1][1] - blocks[activeBlock[0]][0][1]];
+        activeBlock[1] = (activeBlock[4][0] == 1) ? 'v' : 'h';
+        activeBlock[2] = [blocks[activeBlock[0]][0][0], blocks[activeBlock[0]][0][1]];
+        activeBlock[3] = [currentMousePosition[0] - activeBlock[2][0]*tile_width, currentMousePosition[1] - activeBlock[2][1]*tile_height];
+
+        for (var i = 0; i < activeBlock[4][0]; i++)
+          for (var j = 0; j < activeBlock[4][1]; j++)
+            field[activeBlock[2][0]+i][activeBlock[2][1]+j] = -1;
+        return false;
+      }
+
+      function onMouseMove(e)
+      {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!gstd || activeBlock[0] == -1) return false;
+        var currentMousePosition = mouseposition(e);
+        var activeBlockBuffer = [(activeBlock[1]=='v') ? activeBlock[2][0] : (currentMousePosition[0] - activeBlock[3][0])/tile_width, (activeBlock[1]=='h') ? activeBlock[2][1] : (currentMousePosition[1] - activeBlock[3][1])/tile_height];
+
+        var effect1 = [Math.floor(activeBlockBuffer[0]), Math.floor(activeBlockBuffer[1])];
+        var effect2 = [effect1[0] + activeBlock[4][0], effect1[1] + activeBlock[4][1]];
+        if (activeBlockBuffer[0] - activeBlock[2][0] > 0 && (((effect2[0] < mesh_divisions_x) ? field[effect2[0]][effect1[1]] != -1 : true) || activeBlock[5][0] != -1))
+          activeBlockBuffer[0] = (activeBlock[5][0] != -1) ? activeBlock[5][0] : (activeBlock[5][0]=effect1[0]);
+        else if (activeBlockBuffer[0] - activeBlock[2][0] < 0 && (((effect1[0] >= 0) ? field[effect1[0]][effect1[1]] != -1 : true) || activeBlock[5][1] != -1))
+          activeBlockBuffer[0] = (activeBlock[5][1] != -1) ? activeBlock[5][1] : (activeBlock[5][1]=effect1[0] + 1);
+        else if (activeBlockBuffer[1] - activeBlock[2][1] > 0 && (((effect2[1] < mesh_divisions_y) ? field[effect1[0]][effect2[1]] != -1 : true) || activeBlock[5][2] != -1))
+          activeBlockBuffer[1] = (activeBlock[5][2] != -1) ? activeBlock[5][2] : (activeBlock[5][2]=effect1[1]);
+        else if (activeBlockBuffer[1] - activeBlock[2][1] < 0 && (((effect1[1] >= 0) ? field[effect1[0]][effect1[1]] != -1 : true) || activeBlock[5][3] != -1))
+          activeBlockBuffer[1] = (activeBlock[5][3] != -1) ? activeBlock[5][3] : (activeBlock[5][3] = effect1[1] + 1);
+        else
+          activeBlock[5] = [-1, -1, -1, -1];
+        activeBlock[2] = [activeBlockBuffer[0], activeBlockBuffer[1]];
+        drawGame();
+        return false;
+      }
+
+      function onMouseReleased(e)
+      {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!gstd || activeBlock[0] == -1) return false;
+        activeBlock[2] = [Math.round(activeBlock[2][0]), Math.round(activeBlock[2][1])];
+        blocks[activeBlock[0]][0][0] = activeBlock[2][0];
+        blocks[activeBlock[0]][0][1] = activeBlock[2][1];
+        blocks[activeBlock[0]][1][0] = activeBlock[2][0] + activeBlock[4][0];
+        blocks[activeBlock[0]][1][1] = activeBlock[2][1] + activeBlock[4][1];
+        for (var i = 0; i < activeBlock[4][0]; i++)
+          for (var j = 0; j < activeBlock[4][1]; j++)
+            field[activeBlock[2][0]+i][activeBlock[2][1]+j] = activeBlock[0];
+        if (blocks[activeBlock[0]][2] && blocks[activeBlock[0]][1][0] == goal[0]+1 && blocks[activeBlock[0]][1][1] == goal[1]+1){
+          return gwin();
+        }
+        activeBlock = [-1, '', [], [], [], [-1, -1, -1, -1]];
+        drawGame();
+        return false;
+      }
+    
+    var theme = document.getElementById('theme');
+    for(var j=0; j < gameData.game.themes.theme.length; j++){
+      var themeOption = document.createElement("option");
+      themeOption.text = gameData.game.themes.theme[j].name;
+      themeOption.value = j+1;
+      theme.add(themeOption);
+    }
+
+    var auswahl = document.getElementById('auswahl');
+    for(var i=0; i < gameData.game.levels.level.length; i++){
+      var auswahlOption = document.createElement("option");
+      auswahlOption.text = "Level " + (i+1);
+      auswahlOption.value = i+1;
+      auswahl.add(auswahlOption);
+    }
+    chooseTheme(themeID);
+    
+    </script>
+</html>

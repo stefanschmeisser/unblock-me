@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Unblockme level creator</title>
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/levelCreatorStyle.css">
+	</head>
+	<body>
+		<div id='cont'>
+			<div id='wrapper'>
+				<canvas id='canvas' ondrop='drop(event)' ondragover='allowDrop(event)'></canvas>
+				<div id="goal"></div>
+			</div>
+			<div id='imageContainer'>
+				<p>
+					<img id='v2' src='legosteintop_1X2.jpg' draggable='true' onmousedown='getMousePositionOnImage(event)' ondragstart='drag(event)'/>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<img id='v3' src='legosteintop_1X3.jpg' draggable='true' onmousedown='getMousePositionOnImage(event)' ondragstart='drag(event)'/>
+				</p>
+				<p>
+					<img id='h2' src='legosteintop_2X1.jpg' draggable='true' onmousedown='getMousePositionOnImage(event)' ondragstart='drag(event)'/>
+				</p>
+				<p>
+					<img id='h3' src='legosteintop_3X1.jpg' draggable='true' onmousedown='getMousePositionOnImage(event)' ondragstart='drag(event)'/>
+				</p>
+				<p>
+					<img id='target' src='legosteintop_target.jpg' draggable='true' onmousedown='getMousePositionOnImage(event)' ondragstart='drag(event)'/>
+				</p>
+			</div>
+		</div>
+		<div id='buttonContainer'>
+			<button id='saveButton' class="btn btn-success btn-lg" onclick="save()">Speichern</button>
+			<button id='resetButton' class="btn btn-danger btn-lg" onclick="reset()">Reset</button>
+		</div>
+		<div id='message'>
+		
+		</div>
+	</body>
+	<script>
+		var canvas_width = 600;
+    var canvas_height = 600;
+    var mesh_divisions_x = 6;
+    var mesh_divisions_y = 6;
+    var tile_width = 100;
+    var tile_height = 100;
+    var mousePositionOnCanvas;
+		var mousePositionOnImage;
+		var currentBlock;
+		var blocks;
+		var context;
+    var isImageClicked = false;
+    var gameField;
+    var message;
+
+    var canvas = document.getElementById("canvas");
+		canvas.width = canvas_width;
+    canvas.height = canvas_height;
+    context = canvas.getContext("2d");
+
+    function init()
+    {
+     	mousePositionOnCanvas = new Object();
+		 	mousePositionOnImage = new Object();
+		 	currentBlock = new Object();
+		 	blocks = new Array();
+		 	message = null;
+		 	document.getElementById('message').className = "";
+		 	document.getElementById('message').innerHTML = "";
+
+    	context.clearRect(0, 0, canvas.width, canvas.height);
+      gameField = new Array(mesh_divisions_x);
+      for (var i = 0; i < mesh_divisions_x; i++)
+      {
+        gameField[i] = new Array(mesh_divisions_y);
+        for (var j = 0; j < mesh_divisions_y; j++){ 
+          gameField[i][j] = -1;
+        }
+      }
+    }
+
+		function allowDrop(evt)
+		{
+	    evt.preventDefault();
+			mousePositionOnCanvas = getMousePositionOnCanvas(evt);
+		}
+
+		function getMousePositionOnImage(evt)
+		{
+			isImageClicked = true;
+    	var parentPosition = getImagePosition(evt.currentTarget);
+    	
+    	if(evt.currentTarget.id == "target"){
+    		currentBlock = {
+    			x: 2,
+    			y: 1,
+    			orientation: 'h',
+    			target: true
+    		};
+    	}else{
+    		b = evt.currentTarget.id.split("");
+    		
+    		if(b[0] == 'h'){ 
+    			x = parseInt(b[1]); 
+    		}else{ 
+    			x = 1; 
+    		}
+
+    		if(b[0] == 'h'){ 
+    			y = 1; 
+    		}else{ 
+    			y = parseInt(b[1]); 
+    		}
+
+    		currentBlock = {
+    			x: x,
+    			y: y,
+    			orientation: b[0],
+    			target: false
+    		};
+    	}
+
+    	mousePositionOnImage = {
+    		x: evt.clientX - parentPosition.x,
+    		y: evt.clientY - parentPosition.y
+    	};
+		}
+
+		function getImagePosition(element)
+		{
+	    x = 0;
+	    y = 0;
+	      
+	    while (element) {
+	        x += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+	        y += (element.offsetTop - element.scrollTop + element.clientTop);
+	        element = element.offsetParent;
+	    }
+
+	    return { 
+	    	x: x, 
+	    	y: y 
+	    };
+		}
+
+		function getMousePositionOnCanvas(evt)
+    {
+      rt = canvas.getBoundingClientRect();
+      return {
+      				x: evt.clientX, 
+      				y: evt.clientY
+      			};
+    }
+
+		function drag(evt)
+		{
+	    evt.dataTransfer.setData("Text",evt.target.id);
+		}
+
+		function drop(evt)
+		{
+			isImageClicked = false;
+	    evt.preventDefault();
+	    var offset = evt.dataTransfer.getData("text/plain").split(',');
+	    var data = evt.dataTransfer.getData("Text");
+
+	    origin = new Object();
+	    origin = {
+	    	x: ((mousePositionOnCanvas.x - mousePositionOnImage.x) - ((mousePositionOnCanvas.x - mousePositionOnImage.x) % tile_width)),
+				y: ((mousePositionOnCanvas.y - mousePositionOnImage.y) - ((mousePositionOnCanvas.y - mousePositionOnImage.y) % tile_width))
+			};
+			currentBlock.origin = origin;
+			blocks.push(currentBlock);
+			// console.log(blocks);
+	 		context.drawImage(document.getElementById(data), currentBlock.origin.x, currentBlock.origin.y);
+		}
+
+		function reset(){
+			init();
+		}
+
+		function save(){
+			gameSave = false;
+			divMessage = document.getElementById('message');
+			divMessage.style.display = "block";
+
+			if(blocks.length > 2){
+				divMessage.className = "alert alert-danger";
+				message = "Es wurde kein Zielblock eingefügt";
+				divMessage.innerHTML = message;
+				for(var i=0; i < blocks.length; i++){
+					if(blocks[i].target == true){
+						gameSave = true;
+						divMessage.className = "alert alert-success";
+						message = "Level wurde gespeichert";
+						divMessage.innerHTML = message;		
+					}
+				}
+			}else{
+				divMessage.className = "alert alert-danger";
+				message = "Zu wenig Blöcke vorhanden";
+				divMessage.innerHTML = message;
+			}
+
+			if(gameSave == true){
+				if (window.XMLHttpRequest) { 
+		    	xhr = new XMLHttpRequest();  
+				}else if(window.ActiveXObject) {   
+					xhr = new ActiveXObject("Microsoft.XMLHTTP");  
+				} 
+			  url = "http://localhost/dokumentenstrukturen/unblockme/savexml.php";  
+			  xhr.open("POST", url, true);
+			  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+			  xhr.send(JSON.stringify(blocks));
+				}
+		}
+
+		init();
+
+	</script>
+</html>
